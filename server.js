@@ -12,6 +12,11 @@ const app = express();
 app.use(cors()); // Enable CORS
 app.use(express.json());
 
+// Default route for testing if the server is running
+app.get('/', (req, res) => {
+  res.send('Backend server is running!');
+});
+
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected'))
@@ -20,6 +25,11 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 app.use('/api/interviews', scheduleRoutes);
 app.use('/api/auth', authRoutes);
+
+// Make sure to handle unhandled routes for better debugging
+app.all('*', (req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
 
 const PORT = process.env.PORT || 4000;
 
